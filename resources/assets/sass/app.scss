@@ -1,2 +1,105 @@
-// @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+@import "node_modules/bootstrap/scss/bootstrap-flex";
+
+html, body, .container-fluid {
+  height: 100%;
+  overflow: hidden;
+}
+
+.row {
+  @include make-row();
+}
+
+.full-height {
+  @include make-row();
+  height: 100%;
+}
+
+.title {
+  @include make-col-span(1);
+  padding: 20px;
+  font-family: Lato;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.name {
+  @include make-col-span(3);
+  padding: 20px;
+  input {
+    outline: 0px solid transparent;
+    font-family: Lato;
+    font-weight: 400;
+    font-size: 18px;
+    color: #878787;
+    border: none;
+    width: 100%;
+    padding: 3px 0 0 0;
+  }
+}
+
+.buttons {
+  @include make-col-span(8);
+  text-align: right;
+  padding: 15px 10px 0 0;
+}
+
+.library {
+  @include make-col-span(12);
+
+  height: 100%;
+  padding: 40px;
+  background: #f857a6; /* fallback for old browsers */
+  background: -webkit-linear-gradient(to left, #f857a6 , #ff5858); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to left, #f857a6 , #ff5858); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  .cards {
+    @include make-row();
+
+    .card {
+      @include make-col-span(2);
+
+    }
+
+  }
+
+
+}
+
+.expand-transition {
+  transition: all .2s ease;
+  height: 100%;
+  overflow: hidden;
+}
+.expand-enter, .expand-leave {
+  height: 0;
+  opacity: 0;
+}
+
+.editor, .viewer {
+  @include make-col-span(6);
+  height: 100%;
+  border-top: 1px dotted #ccc;
+}
+
+.editor {
+  border-right: 1px dotted #ccc;
+  textarea {
+    word-break: break-all;
+    height: 95%;
+    width: 100%;
+    outline: 0px solid transparent;
+    border: none;
+    resize: none;
+    padding: 20px;
+    font-family: Inconsolata;
+  }
+}
+
+.viewer {
+  overflow: scroll;
+  padding: 20px;
+}
+
+
+
 
