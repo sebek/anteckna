@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class DocumentController extends Controller
 {
+    public function index()
+    {
+        $documents = Document::all();
+
+        return ['documents' => $documents];
+    }
+
     public function store(Request $request)
     {
         $document = Document::create(['markdown' => $request->input('markdown')]);

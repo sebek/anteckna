@@ -12524,6 +12524,9 @@ Marked.setOptions({
     gfm: true
 });
 
+/** Socket IO **/
+var socket = io('http://localhost:7575');
+
 new Vue({
 
     el: '#app',
@@ -12532,10 +12535,12 @@ new Vue({
         documentId: false,
         documentName: "Untitled",
         document: "",
+        documents: null,
         shouldSave: false,
         isSaving: false,
         showLibrary: false,
-        documentResource: false
+        documentResource: false,
+        editMode: false
     },
 
     computed: {
@@ -12551,8 +12556,44 @@ new Vue({
     },
 
     methods: {
-        save: function save() {
+        loadDocuments: function loadDocuments() {
             var _this = this;
+
+            this.documentResource.get().then(function (response) {
+                _this.documents = response.data.documents;
+            });
+        },
+        loadDocument: function loadDocument(document) {
+            this.documentId = document.id;
+            this.documentName = document.name;
+            this.document = document.markdown;
+            this.showLibrary = false;
+
+            socket.emit('loaded.document', { id: document.id });
+        },
+        keyPressed: function keyPressed(key) {
+
+            var positionStart = key.target.selectionStart;
+            var positionEnd = key.target.selectionEnd;
+            var length = positionEnd - positionStart;
+
+            if (length === 0) {
+                positionStart = positionStart - 1;
+                length = 1;
+            }
+
+            var commandKeys = ['Escape', 'PageUp', 'PageDown', 'Home', 'End', 'Insert', 'Delete', 'Backspace', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'ShiftLeft', 'ShiftRight', 'OSLeft', 'OSRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'Enter', 'NumpadEnter'];
+
+            var character = key.target.value.substr(positionStart, length);
+
+            if (commandKeys.indexOf(key.code) >= 0) {
+                console.log("Command", key.code, key.keyCode);
+            } else {
+                console.log("Character", character, key.keyCode);
+            }
+        },
+        save: function save() {
+            var _this2 = this;
 
             // We're not saving nothing
             if (!this.document.length) {
@@ -12568,28 +12609,28 @@ new Vue({
                 // Creating
             } else {
                     this.documentResource.save({}, { name: this.documentName, markdown: this.document }).then(function (response) {
-                        _this.documentId = response.data.id;
+                        _this2.documentId = response.data.id;
                     }, function (response) {
                         console.log("error", response);
                     });
                 }
         },
         autoSave: function autoSave() {
-            var _this2 = this;
+            var _this3 = this;
 
             setTimeout(function () {
-                if (_this2.shouldSave == true) {
-                    console.log("Sparar");
-                    _this2.shouldSave = false;
+                if (_this3.shouldSave == true) {
+                    _this3.shouldSave = false;
                 }
-                _this2.autoSave();
+                _this3.autoSave();
             }, 500);
         }
     },
 
     ready: function ready() {
-        this.documentResourc = this.$resource('documents{/id}');
+        this.documentResource = this.$resource('documents{/id}');
         this.autoSave();
+        this.loadDocuments();
     }
 });
 

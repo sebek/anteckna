@@ -15,7 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('document', 'DocumentController');
+Route::resource('documents', 'DocumentController');
 
 /*
 |--------------------------------------------------------------------------

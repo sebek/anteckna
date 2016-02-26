@@ -4973,7 +4973,9 @@ html, body, .container-fluid {
     .library .cards .card {
       -webkit-flex: 0 0 16.6666666667%;
       -ms-flex: 0 0 16.6666666667%;
-      flex: 0 0 16.6666666667%; }
+      flex: 0 0 16.6666666667%;
+      margin-right: 10px;
+      border: none; }
 
 .expand-transition {
   transition: all .2s ease;
@@ -4985,11 +4987,10 @@ html, body, .container-fluid {
   opacity: 0; }
 
 .editor, .viewer {
-  -webkit-flex: 0 0 50%;
-  -ms-flex: 0 0 50%;
-  flex: 0 0 50%;
+  transition: all .2s ease;
   height: 100%;
-  border-top: 1px dotted #ccc; }
+  border-top: 1px dotted #ccc;
+  padding: 0; }
 
 .editor {
   border-right: 1px dotted #ccc; }
@@ -5005,6 +5006,6 @@ html, body, .container-fluid {
 
 .viewer {
   overflow: scroll;
-  padding: 20px; }
+  padding: 20px 20px 60px 20px; }
 
 /*# sourceMappingURL=app.css.map */

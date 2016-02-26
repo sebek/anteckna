@@ -16,6 +16,9 @@ Marked.setOptions({
     gfm: true
 });
 
+/** Socket IO **/
+var socket = io('http://localhost:7575');
+
 new Vue({
 
     el: '#app',
@@ -24,10 +27,12 @@ new Vue({
         documentId: false,
         documentName: "Untitled",
         document: "",
+        documents: null,
         shouldSave: false,
         isSaving: false,
         showLibrary: false,
-        documentResource: false
+        documentResource: false,
+        editMode: false
     },
 
     computed: {
@@ -44,6 +49,65 @@ new Vue({
 
     methods: {
 
+        loadDocuments() {
+            this.documentResource.get().then((response) => {
+                this.documents = response.data.documents;
+            })
+        },
+
+        loadDocument(document) {
+            this.documentId = document.id;
+            this.documentName = document.name;
+            this.document = document.markdown;
+            this.showLibrary = false;
+
+            socket.emit('loaded.document', { id: document.id });
+        },
+
+        keyPressed(key) {
+
+            var positionStart = key.target.selectionStart;
+            var positionEnd = key.target.selectionEnd;
+            var length = (positionEnd - positionStart);
+
+            if (length === 0) {
+                positionStart = positionStart - 1;
+                length = 1;
+            }
+
+            var commandKeys = [
+                'Escape',
+                'PageUp',
+                'PageDown',
+                'Home',
+                'End',
+                'Insert',
+                'Delete',
+                'Backspace',
+                'ArrowLeft',
+                'ArrowRight',
+                'ArrowUp',
+                'ArrowDown',
+                'ShiftLeft',
+                'ShiftRight',
+                'OSLeft',
+                'OSRight',
+                'ControlLeft',
+                'ControlRight',
+                'AltLeft',
+                'AltRight',
+                'Enter',
+                'NumpadEnter'
+            ];
+
+            var character = key.target.value.substr(positionStart, length);
+
+            if (commandKeys.indexOf(key.code) >= 0) {
+                console.log("Command", key.code, key.keyCode);
+            } else {
+                console.log("Character", character, key.keyCode);
+            }
+        },
 
         save() {
 
@@ -73,7 +137,6 @@ new Vue({
         autoSave() {
             setTimeout(() => {
                 if (this.shouldSave == true) {
-                    console.log("Sparar");
                     this.shouldSave = false;
                 }
                 this.autoSave();
@@ -83,8 +146,9 @@ new Vue({
     },
 
     ready() {
-        this.documentResourc = this.$resource('documents{/id}');
+        this.documentResource = this.$resource('documents{/id}');
         this.autoSave();
+        this.loadDocuments();
     }
 
 });

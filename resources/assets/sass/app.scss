@@ -57,11 +57,10 @@ html, body, .container-fluid {
 
     .card {
       @include make-col-span(2);
-
+      margin-right: 10px;
+      border: none;
     }
-
   }
-
 
 }
 
@@ -76,9 +75,10 @@ html, body, .container-fluid {
 }
 
 .editor, .viewer {
-  @include make-col-span(6);
+  transition: all .2s ease;
   height: 100%;
   border-top: 1px dotted #ccc;
+  padding: 0;
 }
 
 .editor {
@@ -97,7 +97,7 @@ html, body, .container-fluid {
 
 .viewer {
   overflow: scroll;
-  padding: 20px;
+  padding: 20px 20px 60px 20px;
 }
 
 
