@@ -37,7 +37,7 @@
                 </div>
                 <div class="editor col-md-6" v-show="editMode" transition="expand">
                     <!--<div v-content-editable="editor"></div>-->
-                    <textarea v-model="document" v-on:keyup="keyPressed"></textarea>
+                    <textarea v-model="document" v-on:keydown="keyPressed"></textarea>
                 </div>
                 <div class="viewer col-md-6" v-bind:class="{'col-md-12': !editMode}">
                     <div>@{{{ markdown }}}</div>

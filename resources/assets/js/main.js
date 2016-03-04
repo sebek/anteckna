@@ -64,16 +64,26 @@ new Vue({
             socket.emit('loaded.document', { id: document.id });
         },
 
+        insertCharacter(character, atPosition, toPosition) {
+            this.document = [this.document.slice(0, atPosition), character, this.document.slice(toPosition)].join('');
+        },
+
+        removeCharacter(atPosition, toPosition) {
+
+            if (atPosition != toPosition) {
+                atPosition++;
+            }
+
+            this.document = this.document.substr(0, (atPosition - 1)) + this.document.substr(toPosition);
+        },
+
         keyPressed(key) {
+
+            console.log("Key pressed")
 
             var positionStart = key.target.selectionStart;
             var positionEnd = key.target.selectionEnd;
             var length = (positionEnd - positionStart);
-
-            if (length === 0) {
-                positionStart = positionStart - 1;
-                length = 1;
-            }
 
             var commandKeys = [
                 'Escape',
@@ -100,12 +110,35 @@ new Vue({
                 'NumpadEnter'
             ];
 
-            var character = key.target.value.substr(positionStart, length);
-
             if (commandKeys.indexOf(key.code) >= 0) {
-                console.log("Command", key.code, key.keyCode);
+
+                console.log("Command", key.code, positionStart, positionEnd);
+
+                if (key.code == "Backspace") {
+                    socket.emit('command', { command: 'remove', atPosition: positionStart, toPosition: positionEnd});
+                }
+
+                if (key.code == "Delete") {
+                    if (positionStart == positionEnd) {
+                        positionStart++;
+                        positionEnd++;
+                    }
+                    socket.emit('command', { command: 'remove', atPosition: positionStart, toPosition: positionEnd });
+                }
+
+                if (key.code == "Enter") {
+                    socket.emit('command', { command: 'insert', character: '\n', atPosition: positionStart, toPosition: positionEnd });
+                }
+
+
             } else {
-                console.log("Character", character, key.keyCode);
+                
+                setTimeout(() => {
+                    var character = key.target.value.substr(positionStart, 1);
+                    socket.emit('command', { command: 'insert', character: character, atPosition: positionStart, toPosition: positionEnd});
+                });
+
+
             }
         },
 
@@ -141,6 +174,16 @@ new Vue({
                 }
                 this.autoSave();
             }, 500);
+        },
+
+        handleCommand(data) {
+            if (data.command == "insert") {
+                this.insertCharacter(data.character, data.atPosition, data.toPosition);
+            }
+
+            if (data.command == "remove") {
+                this.removeCharacter(data.atPosition, data.toPosition);
+            }
         }
 
     },
@@ -149,6 +192,17 @@ new Vue({
         this.documentResource = this.$resource('documents{/id}');
         this.autoSave();
         this.loadDocuments();
+
+        socket.on('command', (data) => {
+            this.handleCommand(data);
+        });
+
+        socket.on('commands', (commands) => {
+             for (var data of commands) {
+                 this.handleCommand(data);
+             }
+        });
+
     }
 
 });
